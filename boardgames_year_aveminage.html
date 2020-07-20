@@ -21,6 +21,21 @@
         width: 75%;
         height: auto;
     }
+    .button {
+        border: 2px solid green;
+        background-color: white;
+        color: black;
+        padding: 16px 32px;
+        text-align: center;
+        font-size: 16px;
+        display: inline-block;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+    .button:hover {
+        background-color:rgb(162, 190, 143);
+    }
 </style>
 <title>Board Game Data</title>
 <h2 style="text-align:center"><b>Average Minimum Age to Play for Games Published per Year</b></h2>
@@ -37,6 +52,9 @@
         a new peak of 10.8 in 2019. The second highest peak occurred in 2017 and 2016 & 2018 are tied
         with 1984 for third highest levels.
     </p>
+        <button class="button" onclick="window.location.href='https://bl.ocks.org/d3noob/a22c42db65eb00d4e369';" style="float:right">Next</button>
+    <button class="button" onclick="window.location.href='index.html';" style="float:left">Previous</button>
+
 </div>
 <!--create div for tooltip-->
 <div id="tooltip"></div>
