@@ -193,17 +193,6 @@
                         .attr("stroke-width", 1.5)
                         .attr("d", line);
 
-                    var pathLength = path.node().getTotalLength();
-
-                    var transitionPath = d3.transition()
-                        .ease(d3.easeSin)
-                        .duration(3000);
-
-                    path.attr("stroke-dashoffset", pathLength)
-                        .attr("stroke-dasharray", pathLength)
-                        .transition(transitionPath)
-                        .attr("stroke-dashoffset", 0);
-
                     // Add circles to line for tooltip to interact with
                     d3.select("svg").select("g").selectAll("circle")
                         .data(data).enter().append("circle")
