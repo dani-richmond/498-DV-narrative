@@ -4,6 +4,8 @@
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <!-- Color Scale -->
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <style>
     #tooltip {
@@ -54,13 +56,14 @@
 <div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
     <p style="font-size: 18px;">
         yada yada board game data yada yada
-        explain what the filters mean
+        include explanation of what each item means
     </p>
     <button class="button" onclick="window.location.href='boardgames_year_mechanics.html';"
         style="float:left">Back</button>
     <button class="button" onclick="window.location.href='index.html';" style="float:right">Restart</button>
 
 </div>
+
 <!--create div for tooltip-->
 <div id="tooltip"></div>
 
@@ -112,14 +115,24 @@
                         d.ave_num_mechanic = +d["Average Count of Mechanics"];
                         d.ave_num_expansion = +d["Average Count of Expansions"];
                         d.ave_num_version = +d["Average Count of Versions"];
+                        d.dice_rolling = +d['Mechanic - Dice Rolling'];
+                        d.hand_mgmt = +d['Mechanic - Hand Management'];
+                        d.set_collect = +d['Mechanic - Set Collection'];
+                        d.card_draft = +d['Mechanic - Card Drafting'];
+                        d.tile_plcmt = +d['Mechanic - Tile Placement'];
+                        d.area_majority = +d['Mechanic - Area Majority'];
+                        d.cooperative = +d['Mechanic - Cooperative'];
+                        d.variable_pp = +d['Mechanic - Variable Player Powers'];
                     });
 
-                    // List of groups (here I have one group per column)
+                    // List of data points (one data point per column)
                     var allGroup = ["Total", "Average of Min Player Age", "Average of Min Players", "Average of Max Players", "Average of Min Playtime", "Average of Max Playtime", "Average User Score", "Average Complexity Rating", "Average Number of Designers", 
                     "Average Number of Artists", "Average Number of Publishers", "Average Number of Honors", 
-                    "Average Count of Categories", "Average Count of Mechanics", "Average Count of Expansions", "Average Count of Versions"]
+                    "Average Count of Categories", "Average Count of Mechanics", "Average Count of Expansions", "Average Count of Versions",
+                    'Mechanic - Dice Rolling','Mechanic - Hand Management','Mechanic - Set Collection','Mechanic - Card Drafting',
+                    'Mechanic - Tile Placement','Mechanic - Area Majority','Mechanic - Cooperative','Mechanic - Variable Player Powers',]
 
-                    // add the options to the button
+                    // Add the options to the button
                     d3.select("#selectButton")
                         .selectAll('myOptions')
                         .data(allGroup)
@@ -128,10 +141,13 @@
                         .text(function (d) { return d; }) // text showed in the menu
                         .attr("value", function (d) { return d; }) // corresponding value returned by the button
 
-                    // A color scale: one color for each group
+                    // A color scale: one color for each data point
                     var myColor = d3.scaleOrdinal()
                         .domain(allGroup)
-                        .range(d3.schemeSet2);
+                        .range(['#29dbbe','#ecd22e','#a31302','#28b1ea','#46f68b','#402c7b','#99fa4e','#34eba4',
+                                '#fd6c1a','#4761e7','#ff881e','#bb2309','#3198f7','#b8f141','#5efc74','#fdbc28',
+                                '#3d7df7','#d4e336','#d5380f','#ffa323','#25c8d6','#7bfe5f','#ec5115','#4b46c0','#930c00']
+                        );
 
                     // Add X axis
                     var x = d3.scaleTime()
@@ -208,10 +224,10 @@
                         })
                         .on("mouseout", mouseout);
 
-                    // A function that update the chart
+                    // Function to update the chart
                     function update(selectedGroup) {
 
-                        // Create new data with the selection?
+                        // Create new data with the selection
                         var dataFilter = data.map(function (d) { return { year: d.year, value: d[selectedGroup] } })
 
                         // Update Y Axis
@@ -219,35 +235,22 @@
 
                         svg.select(".yaxis")
                             .transition()
-                            .duration(1000)
+                            .duration(3000)
                             .call(d3.axisLeft(y));
 
                         svg.select(".yaxis_label")
                             .text(selectedGroup);
 
-                        // Give these new data to update line
+                        // Pass new data to update line
                         path
                             .datum(dataFilter)
                             .transition()
-                            .duration(1000)
+                            .duration(3000)
                             .attr("d", d3.line()
                                 .x(function (d) { return x(+d.year) })
                                 .y(function (d) { return y(+d.value) })
                             )
                             .attr("stroke", function (d) { return myColor(selectedGroup) })
-
-                        /*var pathLength = path.node().getTotalLength();
-
-                        var transitionPath = d3.transition()
-                            .ease(d3.easeSin)
-                            .duration(3000);
-
-                        path.attr("stroke-dashoffset", pathLength)
-                            .attr("stroke-dasharray", pathLength)
-                            .transition(transitionPath)
-                            .attr("stroke-dashoffset", 0);*/
-
-
 
                         //Update the circles
                         var dot = svg.selectAll("circle")
@@ -259,7 +262,7 @@
                             .attr("r", 5)
                             .merge(dot)
                             .transition()
-                            .duration(1000)
+                            .duration(3000)
                             .attr("cx", function (d) { return x(d.year); })
                             .attr("cy", function (d) { return y(+d.value); })
                             .attr("fill", function (d) { return myColor(selectedGroup) });
@@ -271,8 +274,6 @@
                                 .html(d.value + " in " + formatTime(d.year))
                         })
                             .on("mouseout", mouseout)
-
-
                     }
 
                     // When the button is changed, run the updateChart function
@@ -284,7 +285,7 @@
                     })
                 })
                 .catch(function (err) {
-                    consol.log("error: " + err);
+                    console.log("error: " + err);
                 })
         }
     </script>
