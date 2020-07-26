@@ -3,9 +3,11 @@
 <html>
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<!-- Load Color Scale -->
 <script src="https://d3js.org/d3-color.v1.min.js"></script>
 <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<!-- Add Style elements -->
 <style>
     #tooltip {
         opacity: 0;
@@ -14,7 +16,8 @@
         width: auto;
         height: auto;
         background: rgb(53, 188, 212);
-        border: 0px;
+        border: 1px solid black;
+        padding: 8px 16px;
     }
 
     #my_dataviz {
@@ -40,38 +43,47 @@
     }
 </style>
 <title>Board Game Data</title>
-<h2 style="text-align:center"><b>Board Games Published per Year by Game Mechanics</b></h2>
-<!-- Create a div to hold the graph -->
+<!-- Add title for this scene -->
+<h2 style="text-align:center"><b>New Board Games Published per Year by Game Mechanics</b></h2>
+<!-- Create div to hold the chart -->
 <div id="my_dataviz" style="float:left"></div>
-<!--Create div for explanation of graph-->
+<!-- Create div for explanation of chart & buttons -->
 <div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
-    <p style="font-size: 18px;">
+    <p style="font-size: 16px;">
         Board game mechanics define how a game is structured in terms of how the game moves from beginning 
         to end. Board Game Geek has a mind-boggling 325 game mechanics that they use to categorize board 
         games on their site. However, some mechanics are definitely more popular than others for board game
         creators. This graph shows some of the most frequently used mechanics in the board game industry.
-        Note: Some board games have more than one mechanic and so will show up on multiple lines.
+        <br>What's especially interesting to note is the relatively recent rise in cooperative (coop) games.
+        While other types started climbing around 2000, coop games didn't begin their climb until 2009
+        which is when the game Pandemic came out. Pre-Pandemic, coops were 2-4% of all games published per
+        year but in 2015 12% of new games had a cooperative mechanic involved.
     </p>
     <button class="button" onclick="window.location.href='boardgames_year_aveminage.html';"
-    style="float:left">Back</button>
-    <button class="button" onclick="window.location.href='boardgames_final_explore.html';"
-        style="float:right">Next</button>
+        style="float:left">Back</button>
+    <button class="button" onclick="window.location.href='index.html';" style="float:right">Next</button>
 </div>
-<!--create div for tooltip-->
+<!-- Create div for explanation at bottom -->
+<div style="position: absolute; bottom: 0px; word-break: break-word; word-wrap: break-word;">
+    <p><i>
+        Note: Some board games have more than one mechanic and so will be counted on multiple lines.
+    </i></p>
+</div>
+<!-- Create div for tooltip -->
 <div id="tooltip"></div>
 
+<!-- Create body and start script -->
 <body onload='init()'>
     <script>
 
-        // set the dimensions and margins of the graph
+        // Set the dimensions and margins of the graph
         var margin = { top: 10, right: 30, bottom: 40, left: 60 },
             width = 900 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-        // append the svg object to the div that holds it
+        // Append the svg object to the div that holds it
         var svg = d3.select("#my_dataviz")
             .append("svg")
-            //.attr("viewBox", '0 0 500 800')
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -84,7 +96,7 @@
         var formatTime = d3.timeFormat("%Y");
         var formatNumber = d3.format(".3r")
 
-        //Read the data & Render Viz
+        //Read the data & render the viz
         async function init() {
             data = await d3.csv("https://raw.githubusercontent.com/dani-richmond/498-DV-narrative/master/boardgames_mechanics_pivot.csv")
                 .then(function (data) {
@@ -95,7 +107,6 @@
                         d.mechanic = d.mechanic;
                         d.count = +d.count;
                     });
-
 
                     // Add X axis
                     var x = d3.scaleTime()
@@ -129,8 +140,7 @@
                         .style("text-anchor", "middle")
                         .text("Number of Games Published with this Mechanic")
 
-
-                    // group data & assign colors
+                    // Group data & assign colors
                     const mechanics = [... new Set(data.map(data => data.mechanic))];
                     var color = d3.scaleSequential(d3.interpolateWarm).domain([0, mechanics.length - 1]);
 
@@ -141,12 +151,12 @@
                         tooltip.style("opacity", 1)
                             .style("left", (d3.event.pageX + 15) + "px")
                             .style("top", (d3.event.pageY - 15) + "px")
-                           // .style("background", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
                             .html(d.count + " " + d.mechanic + " games <br> published in " + formatTime(d.year));
                     };
+
                     var mouseout = function () { tooltip.style("opacity", 0) };
 
-                    // Add the lines
+                    // Add the lines & transition path for them
                     mechanics.forEach(function (mechanic, i) {
                         const line = d3.line()
                             .x(function (d) { return x(d.year) })
