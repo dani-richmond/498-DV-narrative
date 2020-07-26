@@ -52,6 +52,10 @@
 <div id="my_dataviz" style="float:left"></div>
 <!-- Initialize a select button -->
 <select id="selectButton"></select>
+<br>
+<input type="number" min="1960" max="2018" value="1960" id="minYear"><label for="minYear">Mininum Year</label>
+<input type="number" min="1960" max="2018" value="2019" id="maxYear"><label for="maxYear">Maximum Year</label>
+<br>
 <!--Create div for explanation of graph-->
 <div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
     <p style="font-size: 18px;">
@@ -126,11 +130,11 @@
                     });
 
                     // List of data points (one data point per column)
-                    var allGroup = ["Total", "Average of Min Player Age", "Average of Min Players", "Average of Max Players", "Average of Min Playtime", "Average of Max Playtime", "Average User Score", "Average Complexity Rating", "Average Number of Designers", 
-                    "Average Number of Artists", "Average Number of Publishers", "Average Number of Honors", 
-                    "Average Count of Categories", "Average Count of Mechanics", "Average Count of Expansions", "Average Count of Versions",
-                    'Mechanic - Dice Rolling','Mechanic - Hand Management','Mechanic - Set Collection','Mechanic - Card Drafting',
-                    'Mechanic - Tile Placement','Mechanic - Area Majority','Mechanic - Cooperative','Mechanic - Variable Player Powers',]
+                    var allGroup = ["Total", "Average of Min Player Age", "Average of Min Players", "Average of Max Players", "Average of Min Playtime", "Average of Max Playtime", "Average User Score", "Average Complexity Rating", "Average Number of Designers",
+                        "Average Number of Artists", "Average Number of Publishers", "Average Number of Honors",
+                        "Average Count of Categories", "Average Count of Mechanics", "Average Count of Expansions", "Average Count of Versions",
+                        'Mechanic - Dice Rolling', 'Mechanic - Hand Management', 'Mechanic - Set Collection', 'Mechanic - Card Drafting',
+                        'Mechanic - Tile Placement', 'Mechanic - Area Majority', 'Mechanic - Cooperative', 'Mechanic - Variable Player Powers',]
 
                     // Add the options to the button
                     d3.select("#selectButton")
@@ -144,9 +148,9 @@
                     // A color scale: one color for each data point
                     var myColor = d3.scaleOrdinal()
                         .domain(allGroup)
-                        .range(['#29dbbe','#ecd22e','#a31302','#28b1ea','#46f68b','#402c7b','#99fa4e','#34eba4',
-                                '#fd6c1a','#4761e7','#ff881e','#bb2309','#3198f7','#b8f141','#5efc74','#fdbc28',
-                                '#3d7df7','#d4e336','#d5380f','#ffa323','#25c8d6','#7bfe5f','#ec5115','#4b46c0','#930c00']
+                        .range(['#29dbbe', '#ecd22e', '#a31302', '#28b1ea', '#46f68b', '#402c7b', '#99fa4e', '#34eba4',
+                            '#fd6c1a', '#4761e7', '#ff881e', '#bb2309', '#3198f7', '#b8f141', '#5efc74', '#fdbc28',
+                            '#3d7df7', '#d4e336', '#d5380f', '#ffa323', '#25c8d6', '#7bfe5f', '#ec5115', '#4b46c0', '#930c00']
                         );
 
                     // Add X axis
@@ -156,6 +160,7 @@
 
                     svg.append("g")
                         .attr("transform", "translate(0," + height + ")")
+                        .attr("class", "xaxis")
                         .call(d3.axisBottom(x));
 
                     // Add X axis label
@@ -224,11 +229,20 @@
                         })
                         .on("mouseout", mouseout);
 
-                    // Function to update the chart
-                    function update(selectedGroup) {
+                    // Function to update the chart based on data point selected
+                    function update() {
+
+                        // Get variables from interactive elements
+                        var selectedGroup = document.getElementById('selectButton').value
+                        var minYear = +(document.getElementById('minYear').value);
+                        var maxYear = +(document.getElementById('maxYear').value);
+                        minYear = parseTime(minYear);
+                        maxYear = parseTime(maxYear);
 
                         // Create new data with the selection
                         var dataFilter = data.map(function (d) { return { year: d.year, value: d[selectedGroup] } })
+                        dataFilter = dataFilter.filter(function (d) { return d.year >= minYear; });
+                        dataFilter = dataFilter.filter(function (d) { return d.year <= maxYear; });
 
                         // Update Y Axis
                         y.domain([0, (d3.max(dataFilter, function (d) { return +d.value; }) + 2)])
@@ -240,6 +254,14 @@
 
                         svg.select(".yaxis_label")
                             .text(selectedGroup);
+
+                        // Update X axis
+                        x.domain([minYear, maxYear])
+
+                        svg.select(".xaxis")
+                            .transition()
+                            .duration(3000)
+                            .call(d3.axisBottom(x));
 
                         // Pass new data to update line
                         path
@@ -276,12 +298,19 @@
                             .on("mouseout", mouseout)
                     }
 
-                    // When the button is changed, run the updateChart function
+                    // When the button is changed, run the update function
                     d3.select("#selectButton").on("change", function (d) {
-                        // recover the option that has been chosen
-                        var selectedOption = d3.select(this).property("value")
-                        // run the updateChart function with this selected option
-                        update(selectedOption)
+                        update()
+                    })
+
+                    // When Min Year is changed, run the update function
+                    d3.select("#minYear").on("change", function(d) {
+                        update()
+                    })
+
+                    // When Max Year is changed, run the update function
+                    d3.select("#maxYear").on("change", function(d) {
+                        update()
                     })
                 })
                 .catch(function (err) {
