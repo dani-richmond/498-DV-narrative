@@ -3,6 +3,7 @@
 <html>
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<!-- Add Style elements -->
 <style>
     #tooltip {
         opacity: 0;
@@ -11,14 +12,15 @@
         width: auto;
         height: auto;
         background: rgb(164, 143, 190);
-        border: 0px;
+        border: 1px solid black;
+        padding: 8px 16px;
     }
     #my_dataviz {
         width: 80%;
         height: auto;
     }
     #svg {
-        width: 80%;
+        width: 75%;
         height: auto;
     }
     .button {
@@ -38,57 +40,60 @@
     }
 </style>
 <title>Board Game Data</title>
+<!-- Add titles for this scene -->
 <h1>Board Game Trends</h1>
-<h2 style="text-align:center"><b>Number of Board Games Published per Year</b></h2>
+<h2 style="text-align:center"><b>Number of New Board Games Published per Year</b></h2>
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz" style="float:left"></div>
-<!--Create div for explanation of graph-->
-<div style="float:right; width:20%; word-break: break-word; word-wrap: break-word;">
+<!-- Create div for explanation of graph & button -->
+<div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
     <p style="font-size: 18px;">
         Although board games have existed for several millennia, the number created per year
         remained relatively low until the 1960's. The number of new games created each year slowly grew
         at first but has really exploded in recent years although it has trended downward the last two
-        years. The board game boom began around 2010 with a resurgence in gaming stores and cafes.
+        years. The board game boom started around 2000 and the more recent explosion after 2010 with a 
+        resurgence in gaming stores and cafes. The data displayed here and on the following graphs is from
+        <a href="https://boardgamegeek.com/" target="_blank">BoardGameGeek<a>, the go-to website for all things board game related.
     </p>
     <button class="button" onclick="window.location.href='boardgames_year_aveminage.html';" style="float:right">Next</button>
 </div>
-<!--create div for tooltip-->
+<!-- Create div for tooltip -->
 <div id="tooltip"></div>
 
+<!-- Create body and start script -->
 <body onload='init()'>
     <script>
 
-
-        // set the dimensions and margins of the graph
+        // Set the dimensions and margins of the graph
         var margin = { top: 10, right: 30, bottom: 40, left: 60 },
             width = 900 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-        // append the svg object to the body of the page
+        // Append the svg object to the div that holds it
         var svg = d3.select("#my_dataviz")
             .append("svg")
-            //.attr("viewBox", '0 0 500 800')
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
-        var data;
         
+        // Initialize variables
+        var data;
         var parseTime = d3.timeParse("%Y");
         var formatTime = d3.timeFormat("%Y");
 
-        //Read the data
+        // Read the data & render the graph
         async function init() {
             data = await d3.csv("https://raw.githubusercontent.com/dani-richmond/498-DV-narrative/master/gamesperyear.csv")
                 .then(function (data) {
 
-
+                    // Format data
                     data.forEach(function(d) {
                         d.year = parseTime(d.year);
                         d.count = +d.count;
                     });
-                
+
                     // Add X axis
                     var x = d3.scaleTime()
                         .domain(d3.extent(data, function (d) { return d.year; }))
@@ -96,7 +101,7 @@
                     svg.append("g")
                         .attr("transform", "translate(0," + height + ")")
                         .call(d3.axisBottom(x));
-                
+
                     // Add X axis label
                     svg.append("text")
                         .attr("transform", 
@@ -111,7 +116,7 @@
                         .range([height, 0]);
                     svg.append("g")
                         .call(d3.axisLeft(y));
-                
+                    
                     // Add Y axis label
                     svg.append("text")
                         .attr("transform", "rotate(-90)")
@@ -121,7 +126,7 @@
                         .style("text-anchor", "middle")
                         .text("Total Games")
 
-                    // Add variables
+                    // Add tooltip and tooltip actions
                     var tooltip = d3.select("#tooltip");
 
                     var mouseover = function (d) {
@@ -129,12 +134,11 @@
                         .style("left", (d3.event.pageX + 15) + "px")
                         .style("top", (d3.event.pageY - 15) + "px")
                         
-                        .html(d.count + " games published" + " in " + formatTime(d.year));
-                        //console.log(JSON.stringify(d))
+                        .html(d.count + " games published in " + formatTime(d.year));
                     };
                     var mouseout = function () { tooltip.style("opacity", 0) };
 
-                    // Add the line
+                    // Add the line & transition path for it
                     const line = d3.line()
                             .x(function (d) { return x(d.year) })
                             .y(function (d) { return y(d.count) });
