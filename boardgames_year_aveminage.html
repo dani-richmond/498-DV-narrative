@@ -3,6 +3,7 @@
 <html>
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<!-- Add Style elements -->
 <style>
     #tooltip {
         opacity: 0;
@@ -13,14 +14,17 @@
         background: rgb(162, 190, 143);
         border: 0px;
     }
+
     #my_dataviz {
         width: 80%;
         height: auto;
     }
+
     #svg {
         width: 75%;
         height: auto;
     }
+
     .button {
         border: 2px solid green;
         background-color: white;
@@ -33,15 +37,17 @@
         transition-duration: 0.4s;
         cursor: pointer;
     }
+
     .button:hover {
-        background-color:rgb(162, 190, 143);
+        background-color: rgb(162, 190, 143);
     }
 </style>
 <title>Board Game Data</title>
+<!-- Add title for this scene -->
 <h2 style="text-align:center"><b>Average Minimum Age to Play for Games Published per Year</b></h2>
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz" style="float:left"></div>
-<!--Create div for explanation of graph-->
+<!-- Create div for explanation of graph and buttons -->
 <div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
     <p style="font-size: 18px;">
         The minimum age is set by the game publisher and is meant to indicate
@@ -53,46 +59,43 @@
         with 1984 for third highest levels.
     </p>
     <button class="button" onclick="window.location.href='index.html';" style="float:left">Back</button>
-    <button class="button" onclick="window.location.href='boardgames_year_mechanics.html';" style="float:right">Next</button>
+    <button class="button" onclick="window.location.href='boardgames_year_mechanics.html';"
+        style="float:right">Next</button>
 </div>
 <!--create div for tooltip-->
 <div id="tooltip"></div>
 
+<!-- Create body and start script -->
 <body onload='init()'>
     <script>
 
-       // var chartDiv = document.getElementById("my_dataviz"); // added
-
-        // set the dimensions and margins of the graph
-
+        // Set the dimensions and margins of the graph
         var margin = { top: 10, right: 30, bottom: 40, left: 60 },
             width = 900 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
-       // var width = chartDiv.clientWidth - margin.left - margin.right;
-        //var height = chartDiv.clientHeight - margin.top - margin.bottom;
 
-        // append the svg object to the body of the page
+        // Append the svg object to the div that holds it
         var svg = d3.select("#my_dataviz")
             .append("svg")
-            //.attr("viewBox", '0 0 500 800')
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
-        var data;
 
+        // Initialize variables
+        var data;
         var parseTime = d3.timeParse("%Y");
         var formatTime = d3.timeFormat("%Y");
         var formatNumber = d3.format(".3r")
 
-        //Read the data
+        //Read the data & render the graph
         async function init() {
             data = await d3.csv("https://raw.githubusercontent.com/dani-richmond/498-DV-narrative/master/boardgames_aveminage.csv")
                 .then(function (data) {
 
-
-                    data.forEach(function(d) {
+                    // Format data
+                    data.forEach(function (d) {
                         d.year = parseTime(d.year);
                         d.ave_minage = +d.ave_minage;
                     });
@@ -107,24 +110,24 @@
 
                     // Add X axis label
                     svg.append("text")
-                        .attr("transform", 
-                            "translate(" + (width/2) + " ," +
+                        .attr("transform",
+                            "translate(" + (width / 2) + " ," +
                             (height + margin.top + 30) + ")")
                         .style("text-anchor", "middle")
                         .text("Year");
 
                     // Add Y axis
                     var y = d3.scaleLinear()
-                        .domain([5, (d3.max(data, function (d) { return d.ave_minage; })+2)])
+                        .domain([5, (d3.max(data, function (d) { return d.ave_minage; }) + 2)])
                         .range([height, 0]);
                     svg.append("g")
                         .call(d3.axisLeft(y));
-                    
+
                     // Add Y axis label
                     svg.append("text")
                         .attr("transform", "rotate(-90)")
                         .attr("y", 0 - margin.left)
-                        .attr("x", 0 - (height/2))
+                        .attr("x", 0 - (height / 2))
                         .attr("dy", "1em")
                         .style("text-anchor", "middle")
                         .text("Average Minimum Gameplayer Age")
@@ -134,26 +137,25 @@
 
                     var mouseover = function (d) {
                         tooltip.style("opacity", 1)
-                        .style("left", (d3.event.pageX + 15) + "px")
-                        .style("top", (d3.event.pageY - 15) + "px")
-                        
-                        .html(formatNumber(d.ave_minage) + " was the average minimum age <br> for games published in " + formatTime(d.year));
-                        //console.log(JSON.stringify(d))
+                            .style("left", (d3.event.pageX + 15) + "px")
+                            .style("top", (d3.event.pageY - 15) + "px")
+
+                            .html(formatNumber(d.ave_minage) + " was the average minimum age <br> for games published in " + formatTime(d.year));
                     };
                     var mouseout = function () { tooltip.style("opacity", 0) };
 
-                    // Add the line
+                    // Add the line & transition path for it
                     const line = d3.line()
-                            .x(function (d) { return x(d.year) })
-                            .y(function (d) { return y(d.ave_minage) });
-                    
+                        .x(function (d) { return x(d.year) })
+                        .y(function (d) { return y(d.ave_minage) });
+
                     const path = svg.append("path")
                         .datum(data)
                         .attr("fill", "none")
                         .attr("stroke", "green")
                         .attr("stroke-width", 1.5)
                         .attr("d", line);
-                    
+
                     const pathLength = path.node().getTotalLength();
 
                     const transitionPath = d3.transition()
@@ -168,9 +170,9 @@
                     // Add circles to line for tooltip to interact with
                     d3.select("svg").select("g").selectAll("circle")
                         .data(data).enter().append("circle")
-                        .attr("r",5)
-                        .attr("cx", function(d) { return x(d.year); })
-                        .attr("cy", function(d) { return y(d.ave_minage); })
+                        .attr("r", 5)
+                        .attr("cx", function (d) { return x(d.year); })
+                        .attr("cy", function (d) { return y(d.ave_minage); })
                         .attr("fill", "green")
                         .on("mouseover", mouseover)
                         .on("mouseout", mouseout)
