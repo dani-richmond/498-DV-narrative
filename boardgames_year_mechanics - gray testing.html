@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<!-- Load Color Scale -->
+<script src="https://d3js.org/d3-color.v1.min.js"></script>
+<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<!-- Add Style elements -->
+<style>
+    #tooltip {
+        opacity: 0;
+        position: absolute;
+        text-align: center;
+        width: auto;
+        height: auto;
+        background: rgb(53, 188, 212);
+        border: 1px solid black;
+        padding: 8px 16px;
+    }
+
+    #my_dataviz {
+        width: 80%;
+        height: auto;
+    }
+
+    .button {
+        border: 2px solid blue;
+        background-color: white;
+        color: black;
+        padding: 16px 32px;
+        text-align: center;
+        font-size: 16px;
+        display: inline-block;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: rgb(53, 188, 212);
+    }
+</style>
+<title>Board Game Data</title>
+<!-- Add title for this scene -->
+<h2 style="text-align:center"><b>New Board Games Published per Year by Game Mechanics</b></h2>
+<!-- Create div to hold the graph -->
+<div id="my_dataviz" style="float:left"></div>
+<!-- Create div for explanation of graph & buttons -->
+<div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
+    <p style="font-size: 16px;">
+        Board game mechanics define how a game is structured in terms of how the game moves from beginning
+        to end. Board Game Geek has a mind-boggling 325 game mechanics that they use to categorize board
+        games on their site. However, some mechanics are definitely more popular than others for board game
+        creators. This graph shows some of the most frequently used mechanics in the board game industry.
+        <br>What's especially interesting to note is the relatively recent rise in cooperative (coop) games.
+        While other types started climbing around 2000, coop games didn't begin their climb until 2009
+        which is when the game Pandemic came out. Pre-Pandemic, coops were 2-4% of all games published per
+        year but in 2015 12% of new games had a cooperative mechanic involved.
+    </p>
+    <button class="button" onclick="window.location.href='boardgames_year_aveminage.html';"
+        style="float:left">Back</button>
+    <button class="button" onclick="window.location.href='boardgames_final_explore.html';" style="float:right">Next</button>
+</div>
+<button id="highlightButton">Highlight Cooperative</button>
+<!-- Create div for explanation at bottom -->
+<div style="position: absolute; bottom: 0px; word-break: break-word; word-wrap: break-word;">
+    <p><i>
+            Note: Some board games have more than one mechanic and so will be counted on multiple lines.
+        </i></p>
+</div>
+<!-- Create div for tooltip -->
+<div id="tooltip"></div>
+
+<!-- Create body and start script -->
+<body onload='init()'>
+    <script>
+
+        // Set the dimensions and margins of the graph
+        var margin = { top: 10, right: 30, bottom: 40, left: 60 },
+            width = 900 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Append the svg object to the div that holds it
+        var svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // Initialize variables
+        var data;
+        var parseTime = d3.timeParse("%Y");
+        var formatTime = d3.timeFormat("%Y");
+        var formatNumber = d3.format(".3r")
+
+        // Read the data & render the graph
+        async function init() {
+            data = await d3.csv("https://raw.githubusercontent.com/dani-richmond/498-DV-narrative/master/boardgames_mechanics_pivot.csv")
+                .then(function (data) {
+
+                    // Format data
+                    data.forEach(function (d) {
+                        d.year = parseTime(d.year);
+                        d.mechanic = d.mechanic;
+                        d.count = +d.count;
+                    });
+
+                    // Add X axis
+                    var x = d3.scaleTime()
+                        .domain(d3.extent(data, function (d) { return d.year; }))
+                        .range([0, width]);
+                    svg.append("g")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(d3.axisBottom(x));
+
+                    // Add X axis label
+                    svg.append("text")
+                        .attr("transform",
+                            "translate(" + (width / 2) + " ," +
+                            (height + margin.top + 30) + ")")
+                        .style("text-anchor", "middle")
+                        .text("Year");
+
+                    // Add Y axis
+                    var y = d3.scaleLinear()
+                        .domain([0, (d3.max(data, function (d) { return d.count; }) + 50)])
+                        .range([height, 0]);
+                    svg.append("g")
+                        .call(d3.axisLeft(y));
+
+                    // Add Y axis label
+                    svg.append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 0 - margin.left)
+                        .attr("x", 0 - (height / 2))
+                        .attr("dy", "1em")
+                        .style("text-anchor", "middle")
+                        .text("Number of Games Published with this Mechanic")
+
+                    // Group data & assign colors
+                    const mechanics = [... new Set(data.map(data => data.mechanic))];
+                    var color = d3.scaleSequential(d3.interpolateWarm).domain([0, mechanics.length - 1]);
+
+                    // Add color legend
+                    var size = 20
+                    svg.selectAll("squares")
+                        .data(mechanics)
+                        .enter()
+                        .append("rect")
+                            .attr("x", 50)
+                            .attr("y", function(d,i) { return 10 + i*(size+5)})
+                            .attr("width", size)
+                            .attr("height", size)
+                            .style("fill", function(d, i) {return color(i)})
+                    svg.selectAll("labels")
+                        .data(mechanics)
+                        .enter()
+                        .append("text")
+                            .attr("x", 50 + size*1.2)
+                            .attr("y", function(d,i) { return 10 + i*(size+5) + (size/2)})
+                            .style("fill", function(d, i) {return color(i)})
+                            .text(function(d) { return d})
+                            .attr("text-anchor", "left")
+                            .style("alignment-baseline", "middle")
+                    
+                    // Add tooltip and tooltip actions
+                    var tooltip = d3.select("#tooltip");
+
+                    var mouseover = function (d) {
+                        tooltip.style("opacity", 1)
+                            .style("left", (d3.event.pageX + 15) + "px")
+                            .style("top", (d3.event.pageY - 15) + "px")
+                            .html(d.count + " " + d.mechanic + " games <br> published in " + formatTime(d.year));
+                        selected_mechanic = d.mechanic
+                        console.log(selected_mechanic)
+                        d3.selectAll(".dot")
+                            .transition()
+                            .duration(200)
+                            .style("fill", "lightgrey")
+                        d3.selectAll("." + selected_mechanic)
+                            .transition()
+                            .duration(200)
+                            .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                            .attr("r", 10)
+                        };
+
+                    var mouseout = function () { tooltip.style("opacity", 0) 
+                        d3.selectAll("circle")
+                                .transition()
+                                .duration(200)
+                                .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                    };
+
+                    // Add the lines & transition path for them
+                    mechanics.forEach(function (mechanic, i) {
+                        const line = d3.line()
+                            .x(function (d) { return x(d.year) })
+                            .y(function (d) { return y(d.count) });
+
+                        const path = svg.append("path")
+                            .data([data.filter(function (d) { return d.mechanic == mechanic; })])
+                            .attr("fill", "none")
+                            .attr("stroke", color(i))
+                            .attr("stroke-width", 1.5)
+                            .attr("d", line);
+
+                        const pathLength = path.node().getTotalLength();
+
+                        const transitionPath = d3.transition()
+                            .ease(d3.easeSin)
+                            .duration(3000);
+
+                        path.attr("stroke-dashoffset", pathLength)
+                            .attr("stroke-dasharray", pathLength)
+                            .transition(transitionPath)
+                            .attr("stroke-dashoffset", 0);
+                    });
+
+                    // Add circles to line for tooltip to interact with
+                    d3.select("svg").select("g").selectAll("dot")
+                        .data(data).enter().append("circle")
+                        .attr("r", 3)
+                        .attr("cx", function (d, i) { return x(d.year); })
+                        .attr("cy", function (d, i) { return y(d.count); })
+                        .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                        .attr("class", function (d) { return "dot " + d.mechanic})
+                        .attr("id", function (d) { return "dot " + d.mechanic})
+                        .on("mouseover", mouseover)
+                        .on("mouseout", mouseout)
+                        
+                })
+                .catch(function (err) {
+                    console.log("error: " + err);
+                })
+        }
+    </script>
+</body>
+
+</html>
