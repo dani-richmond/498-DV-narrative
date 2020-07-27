@@ -174,9 +174,28 @@
                             .style("left", (d3.event.pageX + 15) + "px")
                             .style("top", (d3.event.pageY - 15) + "px")
                             .html(d.count + " " + d.mechanic + " games <br> published in " + formatTime(d.year));
+                        // Set all other circles to grey then make the circles for specific mechanic bigger and color
+                        selected_mechanic = mechanics.indexOf(d.mechanic)
+                        d3.selectAll(".dot")
+                            .transition()
+                            .duration(200)
+                            .style("fill", "lightgrey")
+                            .attr("r", .5)
+                        d3.selectAll("." + "n" + selected_mechanic)
+                            .transition()
+                            .duration(200)
+                            .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                            .attr("r", 10)
                     };
 
-                    var mouseout = function () { tooltip.style("opacity", 0) };
+                    var mouseout = function () { 
+                        tooltip.style("opacity", 0)
+                        d3.selectAll("circle")
+                            .transition()
+                            .duration(200)
+                            .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                            .attr("r", 3)
+                    };
 
                     // Add the lines & transition path for them
                     mechanics.forEach(function (mechanic, i) {
@@ -209,7 +228,8 @@
                         .attr("r", 3)
                         .attr("cx", function (d, i) { return x(d.year); })
                         .attr("cy", function (d, i) { return y(d.count); })
-                        .attr("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                        .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                        .attr("class", function (d) { return "dot " + "n" + mechanics.indexOf(d.mechanic) })
                         .on("mouseover", mouseover)
                         .on("mouseout", mouseout)
 
