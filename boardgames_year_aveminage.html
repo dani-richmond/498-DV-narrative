@@ -12,7 +12,8 @@
         width: auto;
         height: auto;
         background: rgb(162, 190, 143);
-        border: 0px;
+        border: 1px solid black;
+        padding: 8px 16px;
     }
 
     #my_dataviz {
@@ -49,15 +50,14 @@
 <div id="my_dataviz" style="float:left"></div>
 <!-- Create div for explanation of graph and buttons -->
 <div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
-    <p style="font-size: 18px;">
+    <p style="font-size: 18px; font-family: Calibri;">
         The minimum age is set by the game publisher and is meant to indicate
         how old the average player must be in order to learn the mechanics of the game. It is often
-        viewed as an indicator for a game's difficulty level. While the average minimum age for the
+        viewed as an indicator for a game's difficulty level. <br>While the average minimum age for the
         games published each year has bounced around mainly in the 8 to 10 range over the years, it
         has been on a mostly steady climb over the past few years of the board game boom and reached
-        a new peak of 10.8 in 2019 which may indicate that a larger percentage of the newer games are 
-        harder. The second highest peak occurred in 2017 and 2016 & 2018 are tied with 1984 for 
-        third highest levels.
+        a new peak of 10.8 in 2019. <br>The second highest peak occurred in 2017 and 2016 & 2018 are tied with 1984 for 
+        third highest minimum age. This may indicate that a larger percentage of the newer games are more difficult or complex.
     </p>
     <button class="button" onclick="window.location.href='index.html';" style="float:left">Back</button>
     <button class="button" onclick="window.location.href='boardgames_year_mechanics.html';"
