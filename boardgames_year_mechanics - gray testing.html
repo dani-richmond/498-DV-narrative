@@ -61,9 +61,9 @@
     </p>
     <button class="button" onclick="window.location.href='boardgames_year_aveminage.html';"
         style="float:left">Back</button>
-    <button class="button" onclick="window.location.href='boardgames_final_explore.html';" style="float:right">Next</button>
+    <button class="button" onclick="window.location.href='boardgames_final_explore.html';"
+        style="float:right">Next</button>
 </div>
-<button id="highlightButton">Highlight Cooperative</button>
 <!-- Create div for explanation at bottom -->
 <div style="position: absolute; bottom: 0px; word-break: break-word; word-wrap: break-word;">
     <p><i>
@@ -74,6 +74,7 @@
 <div id="tooltip"></div>
 
 <!-- Create body and start script -->
+
 <body onload='init()'>
     <script>
 
@@ -151,22 +152,22 @@
                         .data(mechanics)
                         .enter()
                         .append("rect")
-                            .attr("x", 50)
-                            .attr("y", function(d,i) { return 10 + i*(size+5)})
-                            .attr("width", size)
-                            .attr("height", size)
-                            .style("fill", function(d, i) {return color(i)})
+                        .attr("x", 50)
+                        .attr("y", function (d, i) { return 10 + i * (size + 5) })
+                        .attr("width", size)
+                        .attr("height", size)
+                        .style("fill", function (d, i) { return color(i) })
                     svg.selectAll("labels")
                         .data(mechanics)
                         .enter()
                         .append("text")
-                            .attr("x", 50 + size*1.2)
-                            .attr("y", function(d,i) { return 10 + i*(size+5) + (size/2)})
-                            .style("fill", function(d, i) {return color(i)})
-                            .text(function(d) { return d})
-                            .attr("text-anchor", "left")
-                            .style("alignment-baseline", "middle")
-                    
+                        .attr("x", 50 + size * 1.2)
+                        .attr("y", function (d, i) { return 10 + i * (size + 5) + (size / 2) })
+                        .style("fill", function (d, i) { return color(i) })
+                        .text(function (d) { return d })
+                        .attr("text-anchor", "left")
+                        .style("alignment-baseline", "middle")
+
                     // Add tooltip and tooltip actions
                     var tooltip = d3.select("#tooltip");
 
@@ -175,24 +176,36 @@
                             .style("left", (d3.event.pageX + 15) + "px")
                             .style("top", (d3.event.pageY - 15) + "px")
                             .html(d.count + " " + d.mechanic + " games <br> published in " + formatTime(d.year));
-                        selected_mechanic = d.mechanic
+                        selected_mechanic = mechanics.indexOf(d.mechanic) //d.mechanic
                         console.log(selected_mechanic)
                         d3.selectAll(".dot")
                             .transition()
                             .duration(200)
                             .style("fill", "lightgrey")
-                        d3.selectAll("." + selected_mechanic)
+                            .attr("r", .5)
+                        d3.selectAll("." + "n" + selected_mechanic)
                             .transition()
                             .duration(200)
                             .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
                             .attr("r", 10)
-                        };
+                        d3.selectAll("path")
+                        .transition()
+                        .duration(200)
+                        .style("stroke", "lightgrey")
+                    };
+                    
 
-                    var mouseout = function () { tooltip.style("opacity", 0) 
+                    var mouseout = function () {
+                        tooltip.style("opacity", 0)
                         d3.selectAll("circle")
-                                .transition()
-                                .duration(200)
-                                .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                            .transition()
+                            .duration(200)
+                            .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
+                            .attr("r", 3)
+                        d3.selectAll("path")
+                        .transition()
+                        .duration(200)
+                        .style("stroke", function (d) { return color(mechanics.indexOf(d.mechanic)); })
                     };
 
                     // Add the lines & transition path for them
@@ -204,8 +217,9 @@
                         const path = svg.append("path")
                             .data([data.filter(function (d) { return d.mechanic == mechanic; })])
                             .attr("fill", "none")
-                            .attr("stroke", color(i))
+                            .style("stroke", color(i))
                             .attr("stroke-width", 1.5)
+                            .attr("class", function (d) { return "path " + "n" + mechanics.indexOf(d.mechanic) })
                             .attr("d", line);
 
                         const pathLength = path.node().getTotalLength();
@@ -227,11 +241,12 @@
                         .attr("cx", function (d, i) { return x(d.year); })
                         .attr("cy", function (d, i) { return y(d.count); })
                         .style("fill", function (d) { return "" + color(mechanics.indexOf(d.mechanic)); })
-                        .attr("class", function (d) { return "dot " + d.mechanic})
-                        .attr("id", function (d) { return "dot " + d.mechanic})
+                        //.attr("class", function (d) { return "dot " + d.mechanic})
+                        .attr("class", function (d) { return "dot " + "n" + mechanics.indexOf(d.mechanic) })
+                        //.attr("id", function (d) { return "dot " + d.mechanic})
                         .on("mouseover", mouseover)
                         .on("mouseout", mouseout)
-                        
+
                 })
                 .catch(function (err) {
                     console.log("error: " + err);
