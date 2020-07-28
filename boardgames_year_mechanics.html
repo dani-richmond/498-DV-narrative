@@ -140,8 +140,8 @@
                     const mechanics = [... new Set(data.map(data => data.mechanic))];
                     var color = d3.scaleOrdinal()
                         .domain(mechanics)
-                        .range(["#083D77",'#A54657','#646F4B','#F79D65','#B4EDD2','#FAB3A9','#A0CFD3','#D4AFCD' ]);
-                
+                        .range(["#083D77",'#A54657','#646F4B','#F79D65', '41D3BD','#FAB3A9','#A0CFD3','#D4AFCD' ]);
+                    //#B4EDD2 mint
                     // Add color legend
                     var size = 20
                     svg.selectAll("squares")
