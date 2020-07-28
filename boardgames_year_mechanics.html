@@ -3,10 +3,6 @@
 <html>
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
-<!-- Load Color Scale -->
-<script src="https://d3js.org/d3-color.v1.min.js"></script>
-<script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <!-- Add Style elements -->
 <style>
     #tooltip {
@@ -142,7 +138,9 @@
 
                     // Group data & assign colors
                     const mechanics = [... new Set(data.map(data => data.mechanic))];
-                    var color = d3.scaleSequential(d3.interpolateWarm).domain([0, mechanics.length - 1]);
+                    var color = d3.scaleOrdinal()
+                        .domain(mechanics)
+                        .range(["#7c3faf",'#d33ea7','#f7478c','#ff5b68','#ff7946','#f69d31','#d7c432','#b8e64b' ]);
                 
                     // Add color legend
                     var size = 20
