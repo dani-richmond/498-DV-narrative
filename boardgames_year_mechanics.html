@@ -230,6 +230,23 @@
                         .attr("class", function (d) { return "dot " + "n" + mechanics.indexOf(d.mechanic) })
                         .on("mouseover", mouseover)
                         .on("mouseout", mouseout)
+                
+                // Add annotation for when Pandemic came out
+                    d3.select("svg").append("text")
+                        .attr("transform", "translate("+x(parseTime(2012))+","+125+") rotate(-90) ")
+                        .attr("cursor", "none")
+                        .attr("fill", "black")
+                        .attr("text-anchor", "middle")
+                        .html("Year Pandemic was released");
+
+                    d3.select("svg").append("line")
+                        .attr("y1", y(height))
+                        .attr("y2", y(0))
+                        .attr("x1", 732)
+                        .attr("x2", 732)
+                        .attr("stroke", "black")
+                        .attr("stroke-width", "2px")
+                        .attr("stroke-dasharray", ("3, 7"));
 
                 })
                 .catch(function (err) {
