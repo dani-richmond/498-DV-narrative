@@ -257,6 +257,8 @@
                         var maxYear = +(document.getElementById('maxYear').value);
                         minYear = parseTime(minYear);
                         maxYear = parseTime(maxYear);
+                        var annote = annotations.filter(function(d){return d.chartName == selectedGroup});
+                        console.log(annote)
 
                         // Create new data with the selection
                         var dataFilter = data.map(function (d) { return { year: d.year, value: d[selectedGroup] } })
