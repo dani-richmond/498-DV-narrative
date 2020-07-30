@@ -181,9 +181,9 @@
                 
                     // Add annotations for 2008 annomaly
                     d3.select("svg").append("foreignObject")
-                        .attr("width", 250)
+                        .attr("width", 275)
                         .attr("height", 100)
-                        .attr("x", 625)
+                        .attr("x", 615)
                         .attr("y", 336)
                         .attr("cursor", "none")
                         .append("xhtml:body")
@@ -192,7 +192,7 @@
                         .style("text-anchor", "middle")
                         .style("font-family", "Calibri")
                         .style("font-size", "14px")
-                        .html("The percentage of board games <br> without a prescribed min age <br>(defaults to min age of 0) <br> was unusually high in 2008<br> (25% vs average of 7% per year).");
+                        .html("The percentage of board games without<br>a prescribed min age which defaults<br>to 0 was unusually high in 2008<br>(25% vs average of 7% per year).");
 
                 })
                 .catch(function (err) {
