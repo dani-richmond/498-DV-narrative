@@ -112,7 +112,10 @@
             },
             {chartName: "Average of Max Playtime", width: 275, height: 100, x:265, y:10,
             text:"<a href='https://boardgamegeek.com/boardgame/4815/campaign-north-africa-desert-war-1940-43' target='_blank'>The Campaign for North Africa</a> is a 'meticulously detailed war simulation that takes more than 40 days of play time' that came out in 1979."
-        }];
+            },
+            {chartName: "Average of Max Players", width: 275, height: 135, x:50, y:55,
+            text:"<a href='https://boardgamegeek.com/boardgame/17529/haggle' target='_blank'>Haggle</a> came out in 1963 - it was designed for large groups like parties and can be played by up to 100 people which significantly skews the average in a year with only 14 new games."
+            }];
 
         //Read the data & render the initial graph
         async function init() {
@@ -318,11 +321,15 @@
                         })
                             .on("mouseout", mouseout)
                         
-                        // Add annotation if applicable based on selection
+                        // Remove existing then add annotation if applicable based on selection
+                        var empty = []
                         var object = svg.selectAll("foreignObject")
-                            .data(annote);
+                            .data(empty);
 
                         object.exit().remove();
+
+                        var object = svg.selectAll("foreignObject")
+                            .data(annote);
 
                         object.enter().append("foreignObject")
                         .attr("width", function (d) { return d.width})
