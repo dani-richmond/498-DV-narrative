@@ -102,7 +102,17 @@
         var data;
         var parseTime = d3.timeParse("%Y");
         var formatTime = d3.timeFormat("%Y");
-        var formatNumber = d3.format(".3r")
+        var formatNumber = d3.format(".3r");
+        var annotations = [
+            {chartName: "Average of Min Player Age", width: 300, height:100, x:500, y:210, 
+            text:"The percentage of board games without<br>a prescribed min age (defaults to 0)<br>was unusually high in 2008 –<br>25% vs average of 7% per year."
+            },
+            {chartName: "Average of Min Playtime", width: 275, height: 100, x:265, y:10,
+            text:"<a href='https://boardgamegeek.com/boardgame/4815/campaign-north-africa-desert-war-1940-43' target='_blank'>The Campaign for North Africa</a> is a 'meticulously detailed war simulation that takes more than 40 days of play time' that came out in 1979."
+            },
+            {chartName: "Average of Max Playtime", width: 275, height: 100, x:265, y:10,
+            text:"<a href='https://boardgamegeek.com/boardgame/4815/campaign-north-africa-desert-war-1940-43' target='_blank'>The Campaign for North Africa</a> is a 'meticulously detailed war simulation that takes more than 40 days of play time' that came out in 1979."
+        }];
 
         //Read the data & render the initial graph
         async function init() {
@@ -305,6 +315,25 @@
                                 .html(d.value + " in " + formatTime(d.year))
                         })
                             .on("mouseout", mouseout)
+                        
+                        // Add annotation if applicable based on selection
+                        var object = svg.selectAll("foreignObject")
+                            .data(annote);
+
+                        object.exit().remove();
+
+                        object.enter().append("foreignObject")
+                        .attr("width", function (d) { return d.width})
+                        .attr("height", function (d) { return d.height})
+                        .attr("x", function (d) { return d.x})
+                        .attr("y", function (d) { return d.y})
+                        .attr("cursor", "none")
+                        .append("xhtml:body")
+                        .style("border", "1px solid black")
+                        .style("padding", "5px 5px")
+                        .style("text-anchor", "middle")
+                        .style("font-family", "Calibri")
+                        .html(function (d) { return d.text})
                     }
 
                     // When the data point select button is changed, run the update function
