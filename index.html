@@ -48,12 +48,15 @@
 <div id="my_dataviz" style="float:left"></div>
 <!-- Create div for explanation of graph & button -->
 <div style="float:right, width 20%; word-break: break-word; word-wrap: break-word;">
-    <p style="font-size: 18px; font-family: Calibri;">
+    <p style="font-size: 16px; font-family: Calibri;">
         Although board games have existed for several millennia, the number created per year
         remained relatively low until the 1960's. The number of new games created each year slowly grew
-        at first but has really exploded in recent years although it has trended downward the last two
-        years. <br>The board game boom started around 2000 and the more recent explosion after 2010 with a 
-        resurgence in gaming stores and cafes. The data displayed here and on the following graphs is from
+        at first but really exploded from 2010 to 2016. <br>
+		The growth in the 90's was largely due to the rise of German games exemplified by Settlers of Catan.
+		More broadly, the Eurogames type reduced the element of luck compared to early board games while emphasizing strategy.
+		<br>The more recent growth can also be attributed in part to the rise of hobby games backed on Kickstarter which has given
+		indie designers (as well as some larger companies) an opportunity to raise funds to produce new games.
+		The data displayed here and on the following graphs is from
         <a href="https://boardgamegeek.com/" target="_blank">BoardGameGeek<a>, the go-to website for all things board game related.
     </p>
     <button class="button" onclick="window.location.href='boardgames_year_aveminage.html';" style="float:right">Next</button>
@@ -83,6 +86,13 @@
         var data;
         var parseTime = d3.timeParse("%Y");
         var formatTime = d3.timeFormat("%Y");
+        var annotations = [
+            {aYear: 1999, adj: 120, xLine: 540, text:"1995 - Settlers of Catan"},
+            {aYear:2008, adj: 120, xLine: 665, text:"2004 - Ticket to Ride"},
+            {aYear: 2012, adj: 120, xLine: 719, text:"2008 - Pandemic & Dominion"},
+            {aYear: 2014, adj: 120, xLine: 746, text:"2010 - 7 Wonders"},
+            {aYear: 2021, adj: 120, xLine: 844, text:"2017 - Gloomhaven"}
+        ];
 
         // Read the data & render the graph
         async function init() {
@@ -171,6 +181,28 @@
                         .attr("fill", "purple")
                         .on("mouseover", mouseover)
                         .on("mouseout", mouseout)
+                
+                    // Add annotation for key games came out
+                    annotations.forEach(function (d, i) {
+                    
+                    d3.select("svg").append("text")
+                        .attr("transform", "translate("+x(parseTime(d.aYear))+","+d.adj+") rotate(-90) ")
+                        .attr("cursor", "none")
+                        .attr("fill", "black")
+                        .attr("text-anchor", "middle")
+                        .attr("font-family", "Calibri")
+                        .attr("font-weight", "bold")
+                        .html(d.text);
+
+                    d3.select("svg").append("line")
+                        .attr("y1", y(1150))
+                        .attr("y2", y(0))
+                        .attr("x1", d.xLine)
+                        .attr("x2", d.xLine)
+                        .attr("stroke", "black")
+                        .attr("stroke-width", "2px")
+                        .attr("stroke-dasharray", ("3, 7"));
+                    });
 
                 })
                 .catch(function (err) {
