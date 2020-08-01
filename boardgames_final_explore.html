@@ -105,21 +105,21 @@
         var formatTime = d3.timeFormat("%Y");
         var formatNumber = d3.format(".3r");
         var annotations = [
-            {chartName: "Average of Min Player Age", width: 300, height:100, x:500, y:210, 
+            {chartName: "Average of Min Player Age", width: 300, height:100, xYear:2008, adj:-125, y:210, 
             text:"The percentage of board games without<br>a prescribed min age (defaults to 0)<br>was unusually high in 2008 –<br>25% vs average of 7% per year."
             },
-            {chartName: "Average of Min Playtime", width: 275, height: 100, x:265, y:10,
+            {chartName: "Average of Min Playtime", width: 275, height: 100, xYear:1979, adj:25, y:10,
             text:"<a href='https://boardgamegeek.com/boardgame/4815/campaign-north-africa-desert-war-1940-43' target='_blank'>The Campaign for North Africa</a> is a 'meticulously detailed war simulation that takes more than 40 days of play time' that came out in 1979."
             },
-            {chartName: "Average of Max Playtime", width: 275, height: 100, x:265, y:10,
+            {chartName: "Average of Max Playtime", width: 275, height: 100, xYear:1979, adj:25, y:10,
             text:"<a href='https://boardgamegeek.com/boardgame/4815/campaign-north-africa-desert-war-1940-43' target='_blank'>The Campaign for North Africa</a> is a 'meticulously detailed war simulation that takes more than 40 days of play time' that came out in 1979."
             },
-            {chartName: "Average of Max Players", width: 275, height: 135, x:50, y:55,
+            {chartName: "Average of Max Players", width: 275, height: 135, xYear:1963, adj: 25, y:55,
             text:"<a href='https://boardgamegeek.com/boardgame/17529/haggle' target='_blank'>Haggle</a> came out in 1963 - it was designed for large groups like parties and can be played by up to 100 people which significantly skews the average in a year with only 14 new games."
             },
-            {chartName: "Average Number of Artists", width: 275, height: 135, x:330, y:50,
+            {chartName: "Average Number of Artists", width: 275, height: 135, xYear:1993, adj: -125, y:50,
             text:"The trend-setting game <a href='https://boardgamegeek.com/boardgame/463/magic-gathering' target='_blank'>Magic: The Gathering</a> came out in 1993 and utilized the talents of a whopping 508 artists to develop its first of many sets of collectible cards."
-            }];
+        }];
 
         //Read the data & render the initial graph
         async function init() {
@@ -265,6 +265,8 @@
                         minYear = parseTime(minYear);
                         maxYear = parseTime(maxYear);
                         var annote = annotations.filter(function(d){return d.chartName == selectedGroup});
+                        annote = annote.filter(function (d) {return parseTime(d.xYear) >= minYear});
+                        annote = annote.filter(function (d) {return parseTime(d.xYear) <= maxYear});
                         console.log(annote)
 
                         // Create new data with the selection
@@ -338,7 +340,7 @@
                         object.enter().append("foreignObject")
                         .attr("width", function (d) { return d.width})
                         .attr("height", function (d) { return d.height})
-                        .attr("x", function (d) { return d.x})
+                        .attr("x", function (d) { return x(parseTime(d.xYear)) + d.adj} )
                         .attr("y", function (d) { return d.y})
                         //.attr("cursor", "none")
                         .append("xhtml:body")
