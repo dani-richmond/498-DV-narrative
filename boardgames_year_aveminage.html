@@ -11,7 +11,7 @@
         text-align: center;
         width: auto;
         height: auto;
-        background: rgb(162, 190, 143);
+        background: rgb(238, 229, 234);
         border: 1px solid black;
         border-radius: 8px;
         padding: 8px 16px;
@@ -28,7 +28,7 @@
     }
 
     .button {
-        border: 2px solid green;
+        border: 2px solid purple;
         background-color: white;
         color: black;
         padding: 16px 32px;
@@ -41,7 +41,7 @@
     }
 
     .button:hover {
-        background-color: rgb(162, 190, 143);
+        background-color: rgb(238, 229, 234);
     }
 </style>
 <title>Board Game Data</title>
@@ -154,7 +154,7 @@
                     const path = svg.append("path")
                         .datum(data)
                         .attr("fill", "none")
-                        .attr("stroke", "green")
+                        .attr("stroke", "#ecd22e")
                         .attr("stroke-width", 1.5)
                         .attr("d", line);
 
@@ -175,7 +175,7 @@
                         .attr("r", 5)
                         .attr("cx", function (d) { return x(d.year); })
                         .attr("cy", function (d) { return y(d.ave_minage); })
-                        .attr("fill", "green")
+                        .attr("fill", "#ecd22e")
                         .on("mouseover", mouseover)
                         .on("mouseout", mouseout)
                 
