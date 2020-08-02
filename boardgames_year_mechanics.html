@@ -143,7 +143,7 @@
                     const mechanics = [... new Set(data.map(data => data.mechanic))];
                     var color = d3.scaleOrdinal()
                         .domain(mechanics)
-                        .range(["#083D77",'#A54657','#646F4B','#F79D65', '#41D3BD','#FAB3A9','#A0CFD3','#D4AFCD' ]);
+                        .range(['#d4e336', '#d5380f', '#ffa323', '#25c8d6', '#7bfe5f', '#ec5115', '#4b46c0', '#930c00']);
                     //#B4EDD2 mint
                     // Add color legend
                     var size = 20
@@ -238,7 +238,7 @@
                     d3.select("svg").append("text")
                         .attr("transform", "translate("+x(parseTime(2012))+","+125+") rotate(-90) ")
                         .attr("cursor", "none")
-                        .attr("fill", "#646F4B")
+                        .attr("fill", "#ffa323")
                         .attr("text-anchor", "middle")
                         .attr("font-family", "Calibri")
                         .attr("font-weight", "bold")
